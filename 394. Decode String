@@ -1,0 +1,42 @@
+class Solution:
+
+    def decode_linear_block(self, k_str: str, pattern: str) -> str:
+        """
+        Core Algebraic Operation: k * pattern
+        Ensures we handle the basic unit of repetition correctly.
+        """
+        try:
+            multiplier = int(k_str) if k_str else 1
+            return multiplier * pattern
+        except ValueError:
+            return pattern # Fallback for malformed inputs
+    
+    def decodeString(self, s: str) -> str:
+        stack = [] # Stores context: (previous_built_string, multiplier)
+        curr_num_str = ""
+        curr_pattern = ""
+
+        for char in s:
+            if char.isdigit():
+                curr_num_str += char
+            elif char == '[':
+                # Shift Context: Push current progress to stack and reset
+                stack.append((curr_pattern, curr_num_str))
+                curr_pattern = ""
+                curr_num_str = ""
+            elif char == ']':
+                # Resolve Context: Pop the last saved state
+                prev_pattern, multiplier_str = stack.pop()
+            
+                # Use our Linear Logic to resolve the current block
+                resolved_block = self.decode_linear_block(multiplier_str, curr_pattern)
+            
+                # Append the resolved block to the previous context
+                curr_pattern = prev_pattern + resolved_block
+            else:
+                # Just a character, add to the current working pattern
+                curr_pattern += char
+
+        return curr_pattern
+
+        
